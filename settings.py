@@ -1,7 +1,10 @@
-YELLOW = (255, 215, 0)
-ORANGE = (255, 165, 0)
-RED = (255, 69, 0)
-PURPLE = (138, 43, 226)
+from pygame import BLEND_MULT
+
+
+BLUE = (3, 107, 252)
+GREEN = (0, 191, 32)
+RED = (196, 31, 31)
+PURPLE = (116, 34, 199)
 MAROON = (128, 0, 0)
 
 
@@ -10,18 +13,17 @@ class Settings():
 
     def __init__(self):
         """Initialize the game's static settings"""
-        # Screen settings
-        self.screen_width = 600
-        self.screen_height = 600
 
         # Grid settings
-        self.num_rows = 20
-        self.num_cols = 20
+        self.num_rows = 15
+        self.num_cols = 30
         self.border_thick = 2
 
         # Cell settings
-        self.cell_width = int(self.screen_width / self.num_cols)
-        self.cell_height = int(self.screen_height / self.num_rows)
+        self.cell_width = 30
+        self.cell_height = 30
+
+        # Screen settings
         self.screen_width = self.cell_width * self.num_cols + self.border_thick
         self.screen_height = self.cell_height * self.num_rows + self.border_thick
 
@@ -30,4 +32,4 @@ class Settings():
         self.cell_clicked = (145, 145, 145)
         self.border_color = (60, 60, 60)
         self.mine_color = (60, 60, 60)
-        self.number_color = [YELLOW, ORANGE, RED, PURPLE, MAROON]
+        self.number_color = [BLUE, GREEN, RED, PURPLE, MAROON]

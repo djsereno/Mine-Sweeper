@@ -8,37 +8,37 @@ import pygame as pg
 from pygame.locals import *
 
 
-def checkEvents():
+def checkEvents(grid, settings):
     """Check for key events. Called once per frame."""
 
     # Go through events that are passed to the script by the window.
     for event in pg.event.get():
+        # Check if user quits
         if event.type == QUIT:
             pg.quit()
             sys.exit()
+        # Check if user clicks
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            pos = pg.mouse.get_pos()
+            (row, col) = get_index(pos, settings)
+            grid.click(row, col)
 
 
 def draw(screen, settings, grid):
     """Draw things to the window. Called once per frame."""
     screen.fill((0, 0, 0))
 
-    # Draw cells
-    for row in range(grid.num_rows):
-        for col in range(grid.num_cols):
-            cell = grid.cells[row][col]
-            rect = cell.rect
-            pg.draw.rect(screen, settings.cell_unclicked, rect)
-
-    # Draw borders
-    for row in range(grid.num_rows + 1):
-        pg.draw.line(screen, settings.border_color,
-                     (0, row * settings.cell_height),
-                     (settings.screen_width, row * settings.cell_height),
-                     settings.border_thick)
-    for col in range(grid.num_cols + 1):
-        pg.draw.line(screen, settings.border_color,
-                     (col * settings.cell_width, 0),
-                     (col * settings.cell_width, settings.screen_height),
-                     settings.border_thick)
+    # Draw grid
+    grid.draw(screen, settings)
 
     pg.display.flip()
+
+
+def get_index(pos, settings):
+    """Returns the (col, row) for a given (x, y)"""
+    (x, y) = pos
+    width, height = settings.screen_width, settings.screen_height
+    num_rows, num_cols = settings.num_rows, settings.num_cols
+    row = int(y / height * num_rows)
+    col = int(x / width * num_cols)
+    return (row, col)

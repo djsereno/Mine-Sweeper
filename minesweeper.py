@@ -2,16 +2,12 @@
 # MINE SWEEPER
 # ==============
 # Future updates or improvements:
-# - Allow user to draw obstacles prior to maze generation
-# - Allow user to define an end point
 
 # Import standard modules.
 import sys
 
 # Import non-standard modules.
 import pygame as pg
-from pygame.locals import *
-from cell import Cell
 from grid import Grid
 import game_functions as gf
 from settings import Settings
@@ -39,7 +35,7 @@ def runPyGame():
     # Main game loop.
     dt = 1 / fps  # dt is the time since last frame.
     while True:
-        gf.checkEvents()
+        gf.checkEvents(grid, settings)
         gf.draw(screen, settings, grid)
 
         dt = fpsClock.tick(fps)

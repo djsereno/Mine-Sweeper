@@ -12,6 +12,7 @@ class Cell():
         self.row = row
         self.col = col
         self.clicked = False
+        self.mine = False
         # self.neighbors = self.getNeighbors(settings)
         self.rect = pg.Rect(self.col * self.width, self.row * self.height,
                             self.width, self.height)
@@ -29,3 +30,11 @@ class Cell():
         neighbors['right'] = gf.getIndex(self.row, self.col + 1,
                                          settings.numRows, settings.numCols)
         return neighbors
+
+    def draw(self, screen, settings):
+        """Draws the cell on the screen"""
+        if self.clicked:
+            fill = settings.cell_clicked
+        else:
+            fill = settings.cell_unclicked
+        pg.draw.rect(screen, fill, self.rect)
