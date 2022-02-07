@@ -24,8 +24,9 @@ class Settings():
         self.cell_font_size = int(self.cell_height * 0.9)
 
         # Screen settings
+        self.header_height = 50
         self.screen_width = self.cell_width * self.num_cols + self.border_thick
-        self.screen_height = self.cell_height * self.num_rows + self.border_thick
+        self.screen_height = self.cell_height * self.num_rows + self.border_thick + self.header_height
 
         # Color settings
         self.cell_unclicked = (225, 225, 225)

@@ -2,6 +2,7 @@
 # MINE SWEEPER
 # ==============
 # Future updates or improvements:
+#   - Add timer and bomb counter
 #   - Improve graphical placement of mines, depending if cell is even or odd number of pixels wide
 #   - Animate cascades
 #   - Artwork for:
@@ -20,7 +21,7 @@ from settings import Settings
 
 
 def runPyGame():
-    # Initialise PyGame.
+    # Initialise PyGame
     pygame.init()
 
     # Set up the clock. This will tick every frame and thus maintain a relatively constant framerate. Hopefully.

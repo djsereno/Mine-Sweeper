@@ -5,7 +5,7 @@ import game_functions as gf
 class Cell():
     """A class to represent the cells within the mine sweeper grid"""
 
-    def __init__(self, settings, row, col):
+    def __init__(self, settings, grid, row, col):
         """Initialize the cell's settings"""
         # Cell properties
         self.row = row
@@ -19,7 +19,7 @@ class Cell():
         # Drawing properties
         self.width = settings.cell_width
         self.height = settings.cell_height
-        self.rect = pygame.Rect(self.col * self.width, self.row * self.height,
+        self.rect = pygame.Rect(self.col * self.width, self.row * self.height + grid.rect.top,
                                 self.width, self.height)
 
     def count_mines(self, grid):

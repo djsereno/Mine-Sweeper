@@ -9,15 +9,16 @@ class Grid():
     def __init__(self, settings):
         self.num_rows = settings.num_rows
         self.num_cols = settings.num_cols
+        self.rect = pygame.Rect(0, settings.header_height, settings.screen_width, settings.screen_height - settings.header_height)
         self.cells = []
         for row in range(self.num_rows):
             self.cells.append([])
             for col in range(self.num_cols):
-                cell = Cell(settings, row, col)
+                cell = Cell(settings, self, row, col)
                 self.cells[row].append(cell)
         self.place_mines(settings)
         self.gameover = 0
-
+        
     def click(self, row, col):
         """Sets cell clicked status to True if False and handles cascades as occurs"""
         cell = self.cells[row][col]
@@ -96,13 +97,22 @@ class Grid():
         # Draw horizontal borders
         for row in range(self.num_rows + 1):
             pygame.draw.line(
-                screen, settings.border_color, (0, row * settings.cell_height),
-                (settings.screen_width, row * settings.cell_height),
+                screen, settings.border_color, (self.rect.left, self.rect.top + row * settings.cell_height),
+                (self.rect.right, self.rect.top + row * settings.cell_height),
                 settings.border_thick)
 
         # Draw vertical borders
         for col in range(self.num_cols + 1):
             pygame.draw.line(
-                screen, settings.border_color, (col * settings.cell_width, 0),
-                (col * settings.cell_width, settings.screen_height),
+                screen, settings.border_color, (col * settings.cell_width, self.rect.top),
+                (col * settings.cell_width, self.rect.bottom),
                 settings.border_thick)
+
+    def get_index(self, pos):
+        """Returns the (col, row) for a given (x, y)"""
+        (x, y) = pos
+        width, height = self.rect.width, self.rect.height
+        num_rows, num_cols = self.num_rows, self.num_cols
+        row = int((y - self.rect.top) / height * num_rows)
+        col = int(x / width * num_cols)
+        return (row, col)
