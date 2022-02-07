@@ -4,7 +4,7 @@ import random as rand
 import copy
 
 # Import non-standard modules.
-import pygame as pg
+import pygame
 from pygame.locals import *
 
 
@@ -12,17 +12,21 @@ def checkEvents(grid, settings):
     """Check for key events. Called once per frame."""
 
     # Go through events that are passed to the script by the window.
-    for event in pg.event.get():
+    for event in pygame.event.get():
         # Check if user quits
         if event.type == QUIT:
-            pg.quit()
+            pygame.quit()
             sys.exit()
         # Check if user clicks
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            pos = pg.mouse.get_pos()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            left, middle, right = pygame.mouse.get_pressed()
+            pos = pygame.mouse.get_pos()
             (row, col) = get_index(pos, settings)
-            grid.click(row, col)
-
+            
+            if left:
+                grid.click(row, col)
+            elif right:
+                grid.flag(row, col)
 
 def draw(screen, settings, grid):
     """Draw things to the window. Called once per frame."""
@@ -31,7 +35,7 @@ def draw(screen, settings, grid):
     # Draw grid
     grid.draw(screen, settings)
 
-    pg.display.flip()
+    pygame.display.flip()
 
 
 def get_index(pos, settings):
