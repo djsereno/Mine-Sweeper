@@ -6,18 +6,22 @@
 #   - Improve graphical placement of mines, depending if cell is even or odd number of pixels wide
 #   - Animate cascades
 #   - Artwork for:
-#       - Win: Untripped mines 
+#       - Win: Untripped mines
 #       - Lose: Unflagged mines, flagged mines, questioned mine, tripped mine
 #       - In Progress: Flag, question
 
-# Import standard modules.
+# Import standard modules
 import sys
 
-# Import non-standard modules.
+# Import non-standard modules
 import pygame
+import random
+
+# Import local classes and methods
+from cell import Cell
 from grid import Grid
-import game_functions as gf
 from settings import Settings
+import game_functions as gf
 
 
 def runPyGame():

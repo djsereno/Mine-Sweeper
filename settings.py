@@ -38,3 +38,9 @@ class Settings():
         self.number_color = [BLUE, GREEN, RED, PURPLE, MAROON]
         self.flag_mine = RED
         self.flag_question = BLUE
+
+        self.init_dynamic_variables()
+
+    def init_dynamic_variables(self):
+        """Initializes the game's dynamic variables"""
+        self.gameover = 0

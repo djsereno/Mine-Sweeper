@@ -1,32 +1,40 @@
-from cell import Cell
+# Import standard modules
+import sys
+
+# Import non-standard modules
 import pygame
 import random
+
+# Import local classes and methods
+from cell import Cell
+from settings import Settings
 
 
 class Grid():
     """A class to represent the mine sweeper grid"""
 
-    def __init__(self, settings):
+    def __init__(self, settings: Settings):
         self.num_rows = settings.num_rows
         self.num_cols = settings.num_cols
-        self.rect = pygame.Rect(0, settings.header_height, settings.screen_width, settings.screen_height - settings.header_height)
+        self.rect = pygame.Rect(
+            0, settings.header_height, settings.screen_width,
+            settings.screen_height - settings.header_height)
         self.cells = []
         for row in range(self.num_rows):
             self.cells.append([])
             for col in range(self.num_cols):
-                cell = Cell(settings, self, row, col)
+                cell = Cell(settings, self.rect, row, col)
                 self.cells[row].append(cell)
         self.place_mines(settings)
-        self.gameover = 0
-        
-    def click(self, row, col):
+
+    def click(self, settings: Settings, row: int, col: int):
         """Sets cell clicked status to True if False and handles cascades as occurs"""
         cell = self.cells[row][col]
         if not cell.clicked:
             cell.clicked = True
 
             if cell.mine:
-                self.gameover = -1
+                settings.gameover = -1
 
             # Click surrounding cells if adjacent mines is 0
             elif cell.adjacent_mines == 0:
@@ -39,18 +47,18 @@ class Grid():
 
                         # Only check cells within the grid
                         if next_row >= 0 and next_row < self.num_rows and next_col >= 0 and next_col < self.num_cols:
-                            self.click(next_row, next_col)
+                            self.click(settings, next_row, next_col)
 
             # Check if the game has ended
-            self.check_gameover()
+            self.check_gameover(settings)
 
-    def flag(self, row, col):
+    def flag(self, row: int, col: int):
         """Flags the current cell"""
         cell = self.cells[row][col]
         if not cell.clicked:
             cell.flag = (cell.flag + 1) % 3
 
-    def place_mines(self, settings):
+    def place_mines(self, settings: Settings):
         """Randomly scatters mines throughout the grid"""
 
         # Place mines throughout the grid
@@ -64,13 +72,36 @@ class Grid():
                     break
 
         # Update the cell adjacent mine counts
+        self.update_mine_counts()
+
+    def update_mine_counts(self):
+        """Counts the adjacent mines for each cell and updates the adjacent_mines property"""
+
         for row in range(self.num_rows):
             for col in range(self.num_cols):
-                self.cells[row][col].count_mines(self)
 
-    def check_gameover(self):
+                cell = self.cells[row][col]
+
+                # Only update for cells that don't contain mines
+                if not cell.mine:
+                    num_mines = 0
+
+                    # Check cells in the surrounding 3x3 grid
+                    for row_off in range(-1, 2):
+                        for col_off in range(-1, 2):
+                            new_row = cell.row + row_off
+                            new_col = cell.col + col_off
+
+                            # Only check cells within the grid
+                            if new_row >= 0 and new_row < self.num_rows and new_col >= 0 and new_col < self.num_cols:
+                                if self.cells[new_row][new_col].mine:
+                                    num_mines += 1
+
+                    cell.adjacent_mines = num_mines
+
+    def check_gameover(self, settings: Settings):
         """Returns True and updates the grid state if the game is over, False otherwise"""
-        if not self.gameover:
+        if not settings.gameover:
 
             # Game is over when all non-mine cells have been clicked
             # or a mine has been clicked
@@ -83,34 +114,35 @@ class Grid():
                         return False
 
             # All mines are unclicked and all non-mines are clicked, game won
-            self.gameover = 1
+            settings.gameover = 1
             return True
 
-    def draw(self, screen, settings):
+    def draw(self, screen: pygame.Surface, settings: Settings):
         """Draws the grid on screen"""
 
         # Draw cells
         for row in range(self.num_rows):
             for col in range(self.num_cols):
-                self.cells[row][col].draw(screen, self, settings)
+                self.cells[row][col].draw(screen, settings)
 
         # Draw horizontal borders
         for row in range(self.num_rows + 1):
             pygame.draw.line(
-                screen, settings.border_color, (self.rect.left, self.rect.top + row * settings.cell_height),
+                screen, settings.border_color,
+                (self.rect.left, self.rect.top + row * settings.cell_height),
                 (self.rect.right, self.rect.top + row * settings.cell_height),
                 settings.border_thick)
 
         # Draw vertical borders
         for col in range(self.num_cols + 1):
-            pygame.draw.line(
-                screen, settings.border_color, (col * settings.cell_width, self.rect.top),
-                (col * settings.cell_width, self.rect.bottom),
-                settings.border_thick)
+            pygame.draw.line(screen, settings.border_color,
+                             (col * settings.cell_width, self.rect.top),
+                             (col * settings.cell_width, self.rect.bottom),
+                             settings.border_thick)
 
-    def get_index(self, pos):
+    def get_index(self, mouse_pos: tuple):
         """Returns the (col, row) for a given (x, y)"""
-        (x, y) = pos
+        (x, y) = mouse_pos
         width, height = self.rect.width, self.rect.height
         num_rows, num_cols = self.num_rows, self.num_cols
         row = int((y - self.rect.top) / height * num_rows)

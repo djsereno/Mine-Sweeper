@@ -1,11 +1,18 @@
+# Import standard modules
+import sys
+
+# Import non-standard modules
 import pygame
-import game_functions as gf
+import random
+
+# Import local classes and methods
+from settings import Settings
 
 
 class Cell():
     """A class to represent the cells within the mine sweeper grid"""
 
-    def __init__(self, settings, grid, row, col):
+    def __init__(self, settings: Settings, grid_rect: pygame.Rect, row: int, col: int):
         """Initialize the cell's settings"""
         # Cell properties
         self.row = row
@@ -19,35 +26,16 @@ class Cell():
         # Drawing properties
         self.width = settings.cell_width
         self.height = settings.cell_height
-        self.rect = pygame.Rect(self.col * self.width, self.row * self.height + grid.rect.top,
+        self.rect = pygame.Rect(self.col * self.width, self.row * self.height + grid_rect.top,
                                 self.width, self.height)
 
-    def count_mines(self, grid):
-        """Counts the adjacent mines and updates the adjacent_mines property"""
-
-        # Only update for cells that don't contain mines
-        if not self.mine:
-            num_mines = 0
-
-            # Check cells in the surrounding 3x3 grid
-            for row_off in range(-1, 2):
-                for col_off in range(-1, 2):
-                    row = self.row + row_off
-                    col = self.col + col_off
-
-                    # Only check cells within the grid
-                    if row >= 0 and row < grid.num_rows and col >= 0 and col < grid.num_cols:
-                        if grid.cells[row][col].mine:
-                            num_mines += 1
-            self.adjacent_mines = num_mines
-
-    def draw(self, screen, grid, settings):
+    def draw(self, screen: pygame.Surface, settings: Settings):
         """Draws the cell on the screen"""
 
         # Background color
-        if grid.gameover == -1:
+        if settings.gameover == -1:
             bg_fill = settings.cell_game_lost
-        elif grid.gameover == 1:
+        elif settings.gameover == 1:
             bg_fill = settings.cell_game_won
         elif self.clicked:
             bg_fill = settings.cell_clicked
@@ -56,7 +44,7 @@ class Cell():
         pygame.draw.rect(screen, bg_fill, self.rect)
 
         # Mines or numbers
-        if self.clicked or grid.gameover:
+        if self.clicked or settings.gameover:
 
             # Mine
             if self.mine:
@@ -90,7 +78,7 @@ class Cell():
                 screen.blit(text, textRect)
 
         # Flags
-        elif not self.clicked and self.flag != 0 and not grid.gameover:
+        elif not self.clicked and self.flag != 0 and not settings.gameover:
             type = settings.cell_font_type
             size = settings.cell_font_size
             font = pygame.font.SysFont(type, size)

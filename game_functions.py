@@ -1,13 +1,17 @@
-# Import standard modules.
+# Import standard modules
 import sys
-import random as rand
-import copy
 
-# Import non-standard modules.
+# Import non-standard modules
 import pygame
+import random
+
+# Import local classes and methods
+from cell import Cell
+from grid import Grid
+from settings import Settings
 
 
-def checkEvents(grid, settings):
+def checkEvents(grid: Grid, settings: Settings):
     """Check for key events. Called once per frame."""
 
     # Go through events that are passed to the script by the window.
@@ -28,12 +32,12 @@ def checkEvents(grid, settings):
                 (row, col) = grid.get_index(pos)
 
                 if left:
-                    grid.click(row, col)
+                    grid.click(settings, row, col)
                 elif right:
                     grid.flag(row, col)
 
 
-def draw(screen, settings, grid):
+def draw(screen: pygame.Surface, settings: Settings, grid: Grid):
     """Draw things to the window. Called once per frame."""
     screen.fill((0, 0, 0))
 
