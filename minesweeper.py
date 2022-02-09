@@ -21,6 +21,7 @@ import random
 from cell import Cell
 from grid import Grid
 from settings import Settings
+from timer import Timer
 import game_functions as gf
 
 
@@ -35,10 +36,15 @@ def runPyGame():
     # Create settings
     settings = Settings()
 
+    # Create game timer
+    timer = Timer(settings)
+
     # Set up the window.
     width, height = settings.screen_width, settings.screen_height
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Mine Sweeper")
+    icon = pygame.image.load("./images/bomb_color.png")
+    pygame.display.set_icon(icon)
 
     # Initialize grid
     grid = Grid(settings)
@@ -47,7 +53,11 @@ def runPyGame():
     dt = 1 / fps  # dt is the time since last frame.
     while True:
         gf.checkEvents(grid, settings)
-        gf.draw(screen, settings, grid)
+
+        if not settings.gameover:
+            timer.update(dt)
+
+        gf.draw(screen, settings, grid, timer)
 
         dt = fpsClock.tick(fps)
 

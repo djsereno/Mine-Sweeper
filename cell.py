@@ -69,13 +69,13 @@ class Cell():
                 size = settings.cell_font_size
                 font = pygame.font.SysFont(type, size)
                 text = font.render(str(num_mines), True, font_color)
-                textRect = text.get_rect()
-                textRect.center = self.rect.center
+                text_rect = text.get_rect()
+                text_rect.center = self.rect.center
 
                 # Adjust font so that it is actually centered
                 descent = font.get_descent()
-                textRect.centery += descent / 2
-                screen.blit(text, textRect)
+                text_rect.centery += descent / 2
+                screen.blit(text, text_rect)
 
         # Flags
         elif not self.clicked and self.flag != 0 and not settings.gameover:
@@ -87,14 +87,14 @@ class Cell():
             if self.flag == 1:
                 font_color = settings.flag_mine
                 text = font.render("!!!", True, font_color)
-                textRect = text.get_rect()
-                textRect.center = self.rect.center
+                text_rect = text.get_rect()
+                text_rect.center = self.rect.center
 
             # Question flag
             elif self.flag == 2:
                 font_color = settings.flag_question
                 text = font.render("?", True, font_color)
-                textRect = text.get_rect()
-                textRect.center = self.rect.center
+                text_rect = text.get_rect()
+                text_rect.center = self.rect.center
 
-            screen.blit(text, textRect)
+            screen.blit(text, text_rect)

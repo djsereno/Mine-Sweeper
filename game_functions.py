@@ -8,6 +8,7 @@ import random
 # Import local classes and methods
 from cell import Cell
 from grid import Grid
+from timer import Timer
 from settings import Settings
 
 
@@ -28,7 +29,7 @@ def checkEvents(grid: Grid, settings: Settings):
             pos = pygame.mouse.get_pos()
 
             # Check if cursor is within the grid extents
-            if grid.rect.collidepoint(pos):
+            if not settings.gameover and grid.rect.collidepoint(pos):
                 (row, col) = grid.get_index(pos)
 
                 if left:
@@ -37,11 +38,12 @@ def checkEvents(grid: Grid, settings: Settings):
                     grid.flag(row, col)
 
 
-def draw(screen: pygame.Surface, settings: Settings, grid: Grid):
+def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer):
     """Draw things to the window. Called once per frame."""
     screen.fill((0, 0, 0))
 
     # Draw header
+    timer.draw(screen, settings)
 
     # Draw grid
     grid.draw(screen, settings)
