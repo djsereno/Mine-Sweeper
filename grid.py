@@ -20,30 +20,51 @@ class Grid():
         # Initialize the grid
         self.num_rows = settings.num_rows
         self.num_cols = settings.num_cols
-        self.rect = pygame.Rect(
-            0, settings.header_height, settings.screen_width,
-            settings.screen_height - settings.header_height)
+        self.rect = settings.grid_rect
         self.cells = []
-        
+
         # Create the cells within the grid
         for row in range(self.num_rows):
             self.cells.append([])
             for col in range(self.num_cols):
-                cell = Cell(screen, settings, self.rect, row, col)
+
+                width = settings.cell_width
+                height = settings.cell_height
+                x = self.rect.left + col * width
+                y = self.rect.top + row * height
+                cell_rect = pygame.Rect(x, y, width, height)
+                cell = Cell(screen, settings, cell_rect, row, col)
                 self.cells[row].append(cell)
-        
+
         # Randomly place the mines within the grid
+        self.place_mines(settings)
+
+    def reset(self, settings):
+        """Reset the grid for a new game"""
+
+        # Reinitialize the cells
+        for row in range(self.num_rows):
+            for col in range(self.num_cols):
+                cell: Cell = self.cells[row][col]
+                cell.init_dynamic_variables()
+
+        # Place new mines throughout the grid
         self.place_mines(settings)
 
     def click(self, settings: Settings, row: int, col: int):
         """Sets cell clicked status to True if False and handles cascades as occurs"""
-        cell = self.cells[row][col]
+        cell: Cell = self.cells[row][col]
         if not cell.clicked:
             cell.clicked = True
 
+            # Update the mine counter if clicking a flagged cell
+            if cell.flag == 1:
+                settings.mines_flagged -= 1
+
             # End the game if clicking a mine
             if cell.mine:
-                settings.gameover = -1
+                settings.game_over = -1
+                settings.game_active = 0
 
             # Click surrounding cells if adjacent mines is 0
             elif cell.adjacent_mines == 0:
@@ -59,15 +80,21 @@ class Grid():
                             self.click(settings, next_row, next_col)
 
             # Check if the game has ended
-            self.check_gameover(settings)
+            self.check_game_over(settings)
 
-    def flag(self, row: int, col: int):
+    def flag(self, settings: Settings, row: int, col: int):
         """Flags the current cell"""
         cell = self.cells[row][col]
-        
-        # Alternate the flag of the cell (nothing, unknown, or bomb)
+
+        # Alternate the flag of the cell (nothing, unknown, or mine)
         if not cell.clicked:
             cell.flag = (cell.flag + 1) % 3
+
+            # Update the flag counter
+            if cell.flag == 1:
+                settings.mines_flagged += 1
+            elif cell.flag == 2:
+                settings.mines_flagged -= 1
 
     def place_mines(self, settings: Settings):
         """Randomly scatters mines throughout the grid"""
@@ -110,9 +137,9 @@ class Grid():
 
                     cell.adjacent_mines = num_mines
 
-    def check_gameover(self, settings: Settings):
+    def check_game_over(self, settings: Settings):
         """Returns True and updates the grid state if the game is over, False otherwise"""
-        if not settings.gameover:
+        if settings.game_active:
 
             # Game is over when all non-mine cells have been clicked
             # or a mine has been clicked
@@ -125,7 +152,8 @@ class Grid():
                         return False
 
             # All mines are unclicked and all non-mines are clicked, game won
-            settings.gameover = 1
+            settings.game_over = 1
+            settings.game_active = 0
             return True
 
     def draw(self, settings: Settings):

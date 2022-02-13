@@ -11,7 +11,7 @@ from grid import Grid
 from settings import Settings
 
 
-class Text():
+class Text_Image():
 
     def __init__(self, message: str, screen: pygame.Surface, font_type: str,
                  font_size: int, color: pygame.Color):

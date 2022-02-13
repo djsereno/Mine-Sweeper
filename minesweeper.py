@@ -5,7 +5,6 @@
 # Artwork: Curtesy of Vecteezy.com
 #
 # Future updates or improvements:
-#   - Add timer and bomb counter
 #   - Improve graphical placement of mines, depending if cell is even or odd number of pixels wide
 #   - Animate cascades
 #   - Artwork for:
@@ -25,6 +24,7 @@ from cell import Cell
 from grid import Grid
 from settings import Settings
 from timer import Timer
+from text_image import Text_Image
 import game_functions as gf
 
 
@@ -46,8 +46,12 @@ def runPyGame():
     icon = pygame.image.load("./images/bomb_color.png")
     pygame.display.set_icon(icon)
 
-    # Create game timer
+    # Create game timer and mine counter
     timer = Timer(screen, settings)
+    mine_counter = Text_Image("{0:02}/{1:02}".format(0, settings.number_mines),
+                              screen, settings.header_font_type,
+                              settings.header_font_size,
+                              settings.header_font_color)
 
     # Initialize grid
     grid = Grid(screen, settings)
@@ -55,9 +59,9 @@ def runPyGame():
     # Main game loop.
     dt = 1 / fps  # dt is the time since last frame.
     while True:
-        gf.checkEvents(grid, settings)
-        gf.update(dt, settings, timer)
-        gf.draw(screen, settings, grid, timer)
+        gf.checkEvents(grid, settings, timer)
+        gf.update(dt, settings, timer, mine_counter)
+        gf.draw(screen, settings, grid, timer, mine_counter)
 
         dt = fpsClock.tick(fps)
 

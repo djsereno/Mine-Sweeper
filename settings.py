@@ -1,3 +1,5 @@
+import pygame
+
 BLUE = (0, 20, 130)
 GREEN = (40, 115, 20)
 RED = (170, 0, 0)
@@ -24,15 +26,23 @@ class Settings():
         self.cell_font_type = "Berlin Sans FB"
         self.cell_font_size = int(self.cell_height * 0.9)
 
+        # Layout settings
+        header_height = 50
+        grid_height = self.cell_height * self.num_rows + self.border_thick
+        grid_width = self.cell_width * self.num_cols + self.border_thick
+        self.header_rect = pygame.Rect(0, 0, grid_width, header_height + 1)
+        self.grid_rect = pygame.Rect(0, self.header_rect.bottom, grid_width,
+                                     grid_height)
+
         # Screen settings
-        self.header_height = 50
-        self.screen_width = self.cell_width * self.num_cols + self.border_thick
-        self.screen_height = self.cell_height * self.num_rows + self.border_thick + self.header_height
+        self.screen_width = grid_width
+        self.screen_height = header_height + grid_height
 
         # UI settings
         self.header_font_type = "Consolas"
         self.header_font_size = 40
         self.header_font_color = WHITE
+        self.header_fill_color = BLUE
 
         # Color settings
         self.cell_unclicked = (225, 225, 225)
@@ -49,4 +59,13 @@ class Settings():
 
     def init_dynamic_variables(self):
         """Initializes the game's dynamic variables"""
-        self.gameover = 0
+
+        self.mines_flagged = 0
+
+        # game_active tracks if a game is currently in-progress or not
+        # 0 = inactive, 1 = active
+        self.game_active = 0
+
+        # game_over tracks if a game is won or lost
+        # 1 = win, -1 = lose, 0 = game in progress
+        self.game_over = 0

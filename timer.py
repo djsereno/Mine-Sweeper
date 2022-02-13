@@ -10,7 +10,7 @@ import random
 from cell import Cell
 from grid import Grid
 from settings import Settings
-from text import Text
+from text_image import Text_Image
 
 
 class Timer():
@@ -20,24 +20,31 @@ class Timer():
         """Initialize the timer"""
 
         # Timer properties
-        self.total_seconds = 0
-        self.message = "{0:02}:{1:02}".format(0, 0)
+        self.init_dynamic_variables()
 
         # Timer text image
-        self.text = Text(self.message, screen, settings.header_font_type,
-                         settings.header_font_size, settings.header_font_color)
+        self.text = Text_Image(self.message, screen, settings.header_font_type,
+                               settings.header_font_size,
+                               settings.header_font_color)
 
-    def update(self, dt):
-        """Increments the current timer value by dt and updates the timer text"""
+    def increment(self, dt):
+        """Increments the current timer value by dt"""
         self.total_seconds += dt / 1000
-        minutes = int(self.total_seconds // 60)
-        seconds = int(self.total_seconds % 60)
+        self.minutes = int(self.total_seconds // 60)
+        self.seconds = int(self.total_seconds % 60)
 
-        # Update the timer message and text image
-        self.message = "{0:02}:{1:02}".format(minutes, seconds)
+    def update(self):
+        """Updates the timer message and text image"""
+        self.message = "{0:02}:{1:02}".format(self.minutes, self.seconds)
         self.text.prep_text(self.message)
 
     def draw(self):
         """Draws the timer on screen"""
-        self.text.text_image_rect.topright = self.text.screen_rect.topright
         self.text.draw()
+
+    def init_dynamic_variables(self):
+        """Initializes the timers's dynamic variables"""
+        self.total_seconds = 0
+        self.minutes = 0
+        self.seconds = 0
+        self.message = "{0:02}:{1:02}".format(0, 0)
