@@ -12,8 +12,11 @@ from settings import Settings
 class Cell():
     """A class to represent the cells within the mine sweeper grid"""
 
-    def __init__(self, settings: Settings, grid_rect: pygame.Rect, row: int, col: int):
+    def __init__(self, screen: pygame.Surface, settings: Settings, grid_rect: pygame.Rect, row: int, col: int):
         """Initialize the cell's settings"""
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()        
+        
         # Cell properties
         self.row = row
         self.col = col
@@ -29,7 +32,7 @@ class Cell():
         self.rect = pygame.Rect(self.col * self.width, self.row * self.height + grid_rect.top,
                                 self.width, self.height)
 
-    def draw(self, screen: pygame.Surface, settings: Settings):
+    def draw(self, settings: Settings):
         """Draws the cell on the screen"""
 
         # Background color
@@ -41,7 +44,7 @@ class Cell():
             bg_fill = settings.cell_clicked
         else:
             bg_fill = settings.cell_unclicked
-        pygame.draw.rect(screen, bg_fill, self.rect)
+        pygame.draw.rect(self.screen, bg_fill, self.rect)
 
         # Mines or numbers
         if self.clicked or settings.gameover:
@@ -53,8 +56,8 @@ class Cell():
                 # screen.blit(self.image, self.rect)
                 mine_fill = settings.mine_color
                 radius = int(self.width * 0.3)
-                pygame.draw.circle(screen, mine_fill, self.rect.center, radius)
-                pygame.draw.circle(screen, (0, 0, 0), self.rect.center, radius,
+                pygame.draw.circle(self.screen, mine_fill, self.rect.center, radius)
+                pygame.draw.circle(self.screen, (0, 0, 0), self.rect.center, radius,
                                    1)
 
             # Adjacent mines number
@@ -75,7 +78,7 @@ class Cell():
                 # Adjust font so that it is actually centered
                 descent = font.get_descent()
                 text_rect.centery += descent / 2
-                screen.blit(text, text_rect)
+                self.screen.blit(text, text_rect)
 
         # Flags
         elif not self.clicked and self.flag != 0 and not settings.gameover:
@@ -97,4 +100,4 @@ class Cell():
                 text_rect = text.get_rect()
                 text_rect.center = self.rect.center
 
-            screen.blit(text, text_rect)
+            self.screen.blit(text, text_rect)

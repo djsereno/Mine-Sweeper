@@ -13,18 +13,26 @@ from settings import Settings
 class Grid():
     """A class to represent the mine sweeper grid"""
 
-    def __init__(self, settings: Settings):
+    def __init__(self, screen: pygame.Surface, settings: Settings):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        # Initialize the grid
         self.num_rows = settings.num_rows
         self.num_cols = settings.num_cols
         self.rect = pygame.Rect(
             0, settings.header_height, settings.screen_width,
             settings.screen_height - settings.header_height)
         self.cells = []
+        
+        # Create the cells within the grid
         for row in range(self.num_rows):
             self.cells.append([])
             for col in range(self.num_cols):
-                cell = Cell(settings, self.rect, row, col)
+                cell = Cell(screen, settings, self.rect, row, col)
                 self.cells[row].append(cell)
+        
+        # Randomly place the mines within the grid
         self.place_mines(settings)
 
     def click(self, settings: Settings, row: int, col: int):
@@ -33,6 +41,7 @@ class Grid():
         if not cell.clicked:
             cell.clicked = True
 
+            # End the game if clicking a mine
             if cell.mine:
                 settings.gameover = -1
 
@@ -55,6 +64,8 @@ class Grid():
     def flag(self, row: int, col: int):
         """Flags the current cell"""
         cell = self.cells[row][col]
+        
+        # Alternate the flag of the cell (nothing, unknown, or bomb)
         if not cell.clicked:
             cell.flag = (cell.flag + 1) % 3
 
@@ -117,25 +128,25 @@ class Grid():
             settings.gameover = 1
             return True
 
-    def draw(self, screen: pygame.Surface, settings: Settings):
+    def draw(self, settings: Settings):
         """Draws the grid on screen"""
 
         # Draw cells
         for row in range(self.num_rows):
             for col in range(self.num_cols):
-                self.cells[row][col].draw(screen, settings)
+                self.cells[row][col].draw(settings)
 
         # Draw horizontal borders
         for row in range(self.num_rows + 1):
             pygame.draw.line(
-                screen, settings.border_color,
+                self.screen, settings.border_color,
                 (self.rect.left, self.rect.top + row * settings.cell_height),
                 (self.rect.right, self.rect.top + row * settings.cell_height),
                 settings.border_thick)
 
         # Draw vertical borders
         for col in range(self.num_cols + 1):
-            pygame.draw.line(screen, settings.border_color,
+            pygame.draw.line(self.screen, settings.border_color,
                              (col * settings.cell_width, self.rect.top),
                              (col * settings.cell_width, self.rect.bottom),
                              settings.border_thick)

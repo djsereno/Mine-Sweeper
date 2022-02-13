@@ -3,6 +3,7 @@ GREEN = (40, 115, 20)
 RED = (170, 0, 0)
 PURPLE = (100, 15, 140)
 MAROON = (90, 0, 0)
+WHITE = (255, 255, 255)
 
 
 class Settings():
@@ -27,6 +28,11 @@ class Settings():
         self.header_height = 50
         self.screen_width = self.cell_width * self.num_cols + self.border_thick
         self.screen_height = self.cell_height * self.num_rows + self.border_thick + self.header_height
+
+        # UI settings
+        self.header_font_type = "Consolas"
+        self.header_font_size = 40
+        self.header_font_color = WHITE
 
         # Color settings
         self.cell_unclicked = (225, 225, 225)

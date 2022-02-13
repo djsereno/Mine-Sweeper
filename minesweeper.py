@@ -1,6 +1,9 @@
 # ==============
 # MINE SWEEPER
 # ==============
+# Author: Derek Sereno
+# Artwork: Curtesy of Vecteezy.com
+#
 # Future updates or improvements:
 #   - Add timer and bomb counter
 #   - Improve graphical placement of mines, depending if cell is even or odd number of pixels wide
@@ -36,9 +39,6 @@ def runPyGame():
     # Create settings
     settings = Settings()
 
-    # Create game timer
-    timer = Timer(settings)
-
     # Set up the window.
     width, height = settings.screen_width, settings.screen_height
     screen = pygame.display.set_mode((width, height))
@@ -46,17 +46,17 @@ def runPyGame():
     icon = pygame.image.load("./images/bomb_color.png")
     pygame.display.set_icon(icon)
 
+    # Create game timer
+    timer = Timer(screen, settings)
+
     # Initialize grid
-    grid = Grid(settings)
+    grid = Grid(screen, settings)
 
     # Main game loop.
     dt = 1 / fps  # dt is the time since last frame.
     while True:
         gf.checkEvents(grid, settings)
-
-        if not settings.gameover:
-            timer.update(dt)
-
+        gf.update(dt, settings, timer)
         gf.draw(screen, settings, grid, timer)
 
         dt = fpsClock.tick(fps)

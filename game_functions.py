@@ -38,14 +38,21 @@ def checkEvents(grid: Grid, settings: Settings):
                     grid.flag(row, col)
 
 
+def update(dt: int, settings: Settings, timer: Timer):
+    """Updates the game items"""
+        
+    # Updater the game timer
+    if not settings.gameover:
+        timer.update(dt)
+
 def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer):
     """Draw things to the window. Called once per frame."""
     screen.fill((0, 0, 0))
 
     # Draw header
-    timer.draw(screen, settings)
+    timer.draw()
 
     # Draw grid
-    grid.draw(screen, settings)
+    grid.draw(settings)
 
     pygame.display.flip()
