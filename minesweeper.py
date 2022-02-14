@@ -5,8 +5,12 @@
 # Artwork: Curtesy of Vecteezy.com
 #
 # Future updates or improvements:
-#   - Improve graphical placement of mines, depending if cell is even or odd number of pixels wide
-#   - Animate cascades
+#   - Animations:
+#       - Highlighted cells
+#       - Emptry cell cascades
+#       - Tripped mine cascades
+#       - Flags placed/removed
+#   - Audio
 #   - Artwork for:
 #       - Win: Untripped mines
 #       - Lose: Unflagged mines, flagged mines, questioned mine, tripped mine

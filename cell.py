@@ -27,6 +27,18 @@ class Cell():
         self.height = settings.cell_height
         self.rect = cell_rect
 
+        # Image properties
+        self.image_rect = pygame.Rect(cell_rect.left, cell_rect.top,
+                                      self.width * 0.8, self.height * 0.8)
+        self.image_rect.center = self.rect.center
+        self.image_mine = pygame.image.load('images/flag_mine.png')
+        self.image_mine = pygame.transform.scale(
+            self.image_mine, (self.image_rect.width, self.image_rect.height))
+        self.image_question = pygame.image.load('images/flag_question.png')
+        self.image_question = pygame.transform.scale(
+            self.image_question,
+            (self.image_rect.width, self.image_rect.height))
+
         # Initialize dynamic cell properties
         self.init_dynamic_variables()
 
@@ -94,16 +106,18 @@ class Cell():
 
             # Mine flag
             if self.flag == 1:
-                font_color = settings.flag_mine
-                text = font.render("!!!", True, font_color)
-                text_rect = text.get_rect()
-                text_rect.center = self.rect.center
+                # font_color = settings.flag_mine
+                # text = font.render("!!!", True, font_color)
+                # text_rect = text.get_rect()
+                # text_rect.center = self.rect.center
+                self.screen.blit(self.image_mine, self.image_rect)
 
             # Question flag
             elif self.flag == 2:
-                font_color = settings.flag_question
-                text = font.render("?", True, font_color)
-                text_rect = text.get_rect()
-                text_rect.center = self.rect.center
+                # font_color = settings.flag_question
+                # text = font.render("?", True, font_color)
+                # text_rect = text.get_rect()
+                # text_rect.center = self.rect.center
+                self.screen.blit(self.image_question, self.image_rect)
 
-            self.screen.blit(text, text_rect)
+            # self.screen.blit(text, text_rect)

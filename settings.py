@@ -21,8 +21,8 @@ class Settings():
         self.number_mines = int(self.num_rows * self.num_cols * 0.1)
 
         # Cell settings
-        self.cell_width = 30
-        self.cell_height = 30
+        self.cell_width = 40
+        self.cell_height = 40
         self.cell_font_type = "Berlin Sans FB"
         self.cell_font_size = int(self.cell_height * 0.9)
 
