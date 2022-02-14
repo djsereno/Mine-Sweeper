@@ -68,7 +68,14 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     screen.fill((0, 0, 0))
 
     # Draw header
-    pygame.draw.rect(screen, settings.header_fill_color, settings.header_rect)
+    if settings.game_over == 1:
+        header_fill = settings.header_fill_win
+    elif settings.game_over == -1:
+        header_fill = settings.header_fill_lose
+    else:
+        header_fill = settings.header_fill
+
+    pygame.draw.rect(screen, header_fill, settings.header_rect)
     timer.text.text_image_rect.midright = settings.header_rect.midright
     timer.draw()
     mine_counter.text_image_rect.midleft = settings.header_rect.midleft

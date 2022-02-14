@@ -1,18 +1,19 @@
 import pygame
 
-BLUE = (0, 20, 130)
-GREEN = (40, 115, 20)
-RED = (170, 0, 0)
-PURPLE = (100, 15, 140)
-MAROON = (90, 0, 0)
-WHITE = (255, 255, 255)
-
-
 class Settings():
     """A class to store game settings"""
 
     def __init__(self):
         """Initialize the game's static settings"""
+
+        # Color dictionary
+        self.colors = {}
+        self.colors["BLUE"] = (0, 20, 130)
+        self.colors["GREEN"] = (40, 115, 20)
+        self.colors["RED"] = (170, 0, 0)
+        self.colors["PURPLE"] = (100, 15, 140)
+        self.colors["MAROON"] = (90, 0, 0)
+        self.colors["WHITE"] = (255, 255, 255)
 
         # Grid settings
         self.num_rows = 10
@@ -25,6 +26,18 @@ class Settings():
         self.cell_height = 40
         self.cell_font_type = "Berlin Sans FB"
         self.cell_font_size = int(self.cell_height * 0.9)
+
+        # Flag images
+        self.flag_images = []
+        self.flag_images.append(pygame.image.load('images/flag_00.png'))
+        self.flag_images.append(pygame.image.load('images/flag_01.png'))
+        self.flag_images.append(pygame.image.load('images/flag_02.png'))
+        self.flag_image_width = self.cell_width * 0.7
+        self.flag_image_height = self.cell_height * 0.7
+        for i in range(len(self.flag_images)):
+            self.flag_images[i] = pygame.transform.scale(
+                self.flag_images[i],
+                (self.flag_image_width, self.flag_image_height))
 
         # Layout settings
         header_height = 50
@@ -41,8 +54,10 @@ class Settings():
         # UI settings
         self.header_font_type = "Consolas"
         self.header_font_size = 40
-        self.header_font_color = WHITE
-        self.header_fill_color = BLUE
+        self.header_font_color = self.colors["WHITE"]
+        self.header_fill = self.colors["BLUE"]
+        self.header_fill_win = self.colors["GREEN"]
+        self.header_fill_lose = self.colors["RED"]
 
         # Color settings
         self.cell_unclicked = (225, 225, 225)
@@ -51,9 +66,12 @@ class Settings():
         self.cell_game_lost = (255, 175, 185)
         self.border_color = (60, 60, 60)
         self.mine_color = (60, 60, 60)
-        self.number_color = [BLUE, GREEN, RED, PURPLE, MAROON]
-        self.flag_mine = RED
-        self.flag_question = BLUE
+        self.number_color = [
+            self.colors["BLUE"], self.colors["GREEN"], self.colors["RED"],
+            self.colors["PURPLE"], self.colors["MAROON"]
+        ]
+        self.flag_mine = self.colors["RED"]
+        self.flag_question = self.colors["BLUE"]
 
         self.init_dynamic_variables()
 

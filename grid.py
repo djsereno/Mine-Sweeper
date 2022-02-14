@@ -152,6 +152,7 @@ class Grid():
                         return False
 
             # All mines are unclicked and all non-mines are clicked, game won
+            settings.mines_flagged = settings.number_mines
             settings.game_over = 1
             settings.game_active = 0
             return True
