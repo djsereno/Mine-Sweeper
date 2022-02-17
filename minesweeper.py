@@ -2,7 +2,6 @@
 # MINE SWEEPER
 # ==============
 # Author: Derek Sereno
-# Artwork: Curtesy of Vecteezy.com
 #
 # Future updates or improvements:
 #   - Animations:

@@ -28,11 +28,17 @@ class Cell():
         self.rect = cell_rect
 
         # Image properties
+        self.clicked_tile_image = settings.number_images[0]
+        self.unclicked_tile_image = settings.unclicked_tile_image
+        self.tile_image_hover = settings.hover_tile_image
+        self.tile_image_rect = self.unclicked_tile_image.get_rect()
+        self.tile_image_rect.center = self.rect.center
+
         self.flag_images = settings.flag_images
-        self.image_rect = pygame.Rect(cell_rect.left, cell_rect.top,
-                                      settings.flag_image_width,
-                                      settings.flag_image_height)
-        self.image_rect.center = self.rect.center
+        self.flag_image_rect = settings.flag_images[0].get_rect()
+        self.flag_image_rect.center = self.rect.center
+        # self.image_rect = pygame.Rect(0, 0, settings.flag_image_width,
+        #                               settings.flag_image_height)
 
         # Initialize dynamic cell properties
         self.init_dynamic_variables()
@@ -44,15 +50,21 @@ class Cell():
         self.mine = False
         self.adjacent_mines = -1
 
-    def draw(self, settings: Settings):
+    def draw(self, settings: Settings, hovered: bool):
         """Draws the cell on the screen"""
 
         # Background color
         if self.clicked or settings.game_over:
-            bg_fill = settings.cell_clicked
+            self.screen.blit(self.clicked_tile_image, self.tile_image_rect)
         else:
-            bg_fill = settings.cell_unclicked
-        pygame.draw.rect(self.screen, bg_fill, self.rect)
+            if hovered:
+                self.screen.blit(self.tile_image_hover, self.tile_image_rect)
+            else:
+                self.screen.blit(self.unclicked_tile_image,
+                                 self.tile_image_rect)
+            # bg_fill = settings.cell_unclicked
+        # pygame.draw.rect(self.screen, (0, 0, 0), self.image_rect, 1)
+        # pygame.draw.rect(self.screen, (0, 0, 0), self.rect, 1)
 
         # Reveal mines or green flags
         if self.mine and settings.game_over:
@@ -68,27 +80,27 @@ class Cell():
 
             # Reveal green flags if game won
             elif settings.game_over == 1:
-                self.screen.blit(self.flag_images[2], self.image_rect)
+                self.screen.blit(self.flag_images[2], self.flag_image_rect)
 
-        # Reveal adjacent mine counts
-        elif self.adjacent_mines > 0 and (self.clicked or settings.game_over):
-            num_mines = self.adjacent_mines
-            if num_mines <= len(settings.number_color):
-                font_color = settings.number_color[num_mines - 1]
-            else:
-                font_color = settings.number_color[-1]
+        # # Reveal adjacent mine counts
+        # elif self.adjacent_mines > 0 and (self.clicked or settings.game_over):
+        #     num_mines = self.adjacent_mines
+        #     if num_mines <= len(settings.number_color):
+        #         font_color = settings.number_color[num_mines - 1]
+        #     else:
+        #         font_color = settings.number_color[-1]
 
-            type = settings.cell_font_type
-            size = settings.cell_font_size
-            font = pygame.font.SysFont(type, size)
-            text = font.render(str(num_mines), True, font_color)
-            text_rect = text.get_rect()
-            text_rect.center = self.rect.center
+        #     type = settings.cell_font_type
+        #     size = settings.cell_font_size
+        #     font = pygame.font.SysFont(type, size)
+        #     text = font.render(str(num_mines), True, font_color)
+        #     text_rect = text.get_rect()
+        #     text_rect.center = self.rect.center
 
-            # Adjust font so that it is actually centered
-            descent = font.get_descent()
-            text_rect.centery += descent / 2
-            self.screen.blit(text, text_rect)
+        #     # Adjust font so that it is actually centered
+        #     descent = font.get_descent()
+        #     text_rect.centery += descent / 2
+        #     self.screen.blit(text, text_rect)
 
         # Flags
         elif not self.clicked and self.flag != 0 and settings.game_active:
@@ -102,7 +114,7 @@ class Cell():
                 # text = font.render("!!!", True, font_color)
                 # text_rect = text.get_rect()
                 # text_rect.center = self.rect.center
-                self.screen.blit(self.flag_images[0], self.image_rect)
+                self.screen.blit(self.flag_images[0], self.flag_image_rect)
 
             # Question flag
             elif self.flag == 2:
@@ -110,6 +122,6 @@ class Cell():
                 # text = font.render("?", True, font_color)
                 # text_rect = text.get_rect()
                 # text_rect.center = self.rect.center
-                self.screen.blit(self.flag_images[1], self.image_rect)
+                self.screen.blit(self.flag_images[1], self.flag_image_rect)
 
             # self.screen.blit(text, text_rect)

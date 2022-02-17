@@ -39,10 +39,11 @@ def checkEvents(grid: Grid, settings: Settings, timer: Timer):
                     settings.game_active = 1
 
                 (row, col) = grid.get_index(pos)
-                if left:
-                    grid.click(settings, row, col)
-                elif right:
-                    grid.flag(settings, row, col)
+                if row != -1 and col != -1:
+                    if left:
+                        grid.click(settings, row, col)
+                    elif right:
+                        grid.flag(settings, row, col)
 
             # Restart the game if the user clicks the header once the game is over
             elif settings.game_over and settings.header_rect.collidepoint(pos):
@@ -65,7 +66,7 @@ def update(dt: int, settings: Settings, timer: Timer,
 def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
          mine_counter: Text_Image):
     """Draw things to the window. Called once per frame."""
-    screen.fill((0, 0, 0))
+    screen.fill(settings.background_color)
 
     # Draw header
     if settings.game_over == 1:
@@ -82,7 +83,8 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     mine_counter.draw()
 
     # Draw grid
-    grid.draw(settings)
+    mouse_pos = pygame.mouse.get_pos()
+    grid.draw(settings, mouse_pos)
 
     pygame.display.flip()
 

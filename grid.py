@@ -28,10 +28,11 @@ class Grid():
             self.cells.append([])
             for col in range(self.num_cols):
 
+                buffer = settings.cell_buffer
                 width = settings.cell_width
                 height = settings.cell_height
-                x = self.rect.left + col * width
-                y = self.rect.top + row * height
+                x = self.rect.left + col * (width + buffer) + buffer
+                y = self.rect.top + row * (height + buffer) + buffer
                 cell_rect = pygame.Rect(x, y, width, height)
                 cell = Cell(screen, settings, cell_rect, row, col)
                 self.cells[row].append(cell)
@@ -110,15 +111,15 @@ class Grid():
                     break
 
         # Update the cell adjacent mine counts
-        self.update_mine_counts()
+        self.update_mine_counts(settings)
 
-    def update_mine_counts(self):
+    def update_mine_counts(self, settings: Settings):
         """Counts the adjacent mines for each cell and updates the adjacent_mines property"""
 
         for row in range(self.num_rows):
             for col in range(self.num_cols):
 
-                cell = self.cells[row][col]
+                cell: Cell = self.cells[row][col]
 
                 # Only update for cells that don't contain mines
                 if not cell.mine:
@@ -136,6 +137,7 @@ class Grid():
                                     num_mines += 1
 
                     cell.adjacent_mines = num_mines
+                    cell.clicked_tile_image = settings.number_images[num_mines]
 
     def check_game_over(self, settings: Settings):
         """Returns True and updates the grid state if the game is over, False otherwise"""
@@ -157,34 +159,46 @@ class Grid():
             settings.game_active = 0
             return True
 
-    def draw(self, settings: Settings):
+    def draw(self, settings: Settings, mouse_pos: tuple):
         """Draws the grid on screen"""
+        i, j = None, None
+        if self.rect.collidepoint(mouse_pos):
+            [i, j] = self.get_index(mouse_pos)
 
         # Draw cells
         for row in range(self.num_rows):
             for col in range(self.num_cols):
-                self.cells[row][col].draw(settings)
+                if row == i and col == j:
+                    self.cells[row][col].draw(settings, True)
+                else:
+                    self.cells[row][col].draw(settings, False)
 
-        # Draw horizontal borders
-        for row in range(self.num_rows + 1):
-            pygame.draw.line(
-                self.screen, settings.border_color,
-                (self.rect.left, self.rect.top + row * settings.cell_height),
-                (self.rect.right, self.rect.top + row * settings.cell_height),
-                settings.border_thick)
+        # # Draw horizontal borders
+        # for row in range(self.num_rows + 1):
+        #     pygame.draw.line(
+        #         self.screen, settings.border_color,
+        #         (self.rect.left, self.rect.top + row * settings.cell_height),
+        #         (self.rect.right, self.rect.top + row * settings.cell_height),
+        #         settings.border_thick)
 
-        # Draw vertical borders
-        for col in range(self.num_cols + 1):
-            pygame.draw.line(self.screen, settings.border_color,
-                             (col * settings.cell_width, self.rect.top),
-                             (col * settings.cell_width, self.rect.bottom),
-                             settings.border_thick)
+        # # Draw vertical borders
+        # for col in range(self.num_cols + 1):
+        #     pygame.draw.line(self.screen, settings.border_color,
+        #                      (col * settings.cell_width, self.rect.top),
+        #                      (col * settings.cell_width, self.rect.bottom),
+        #                      settings.border_thick)
 
     def get_index(self, mouse_pos: tuple):
         """Returns the (col, row) for a given (x, y)"""
-        (x, y) = mouse_pos
-        width, height = self.rect.width, self.rect.height
-        num_rows, num_cols = self.num_rows, self.num_cols
-        row = int((y - self.rect.top) / height * num_rows)
-        col = int(x / width * num_cols)
-        return (row, col)
+        # (x, y) = mouse_pos
+        # width, height = self.rect.width, self.rect.height
+        # num_rows, num_cols = self.num_rows, self.num_cols
+        # row = int((y - self.rect.top) / height * num_rows)
+        # col = int(x / width * num_cols)
+        # return (row, col)
+
+        for row in range(self.num_rows):
+            for col in range(self.num_cols):
+                if self.cells[row][col].rect.collidepoint(mouse_pos):
+                    return (row, col)
+        return (-1, -1)

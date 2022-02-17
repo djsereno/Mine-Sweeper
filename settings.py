@@ -1,5 +1,6 @@
 import pygame
 
+
 class Settings():
     """A class to store game settings"""
 
@@ -24,25 +25,40 @@ class Settings():
         # Cell settings
         self.cell_width = 40
         self.cell_height = 40
+        self.cell_buffer = 8
         self.cell_font_type = "Berlin Sans FB"
         self.cell_font_size = int(self.cell_height * 0.9)
 
         # Flag images
         self.flag_images = []
-        self.flag_images.append(pygame.image.load('images/flag_00.png'))
-        self.flag_images.append(pygame.image.load('images/flag_01.png'))
-        self.flag_images.append(pygame.image.load('images/flag_02.png'))
-        self.flag_image_width = self.cell_width * 0.7
-        self.flag_image_height = self.cell_height * 0.7
-        for i in range(len(self.flag_images)):
-            self.flag_images[i] = pygame.transform.scale(
-                self.flag_images[i],
-                (self.flag_image_width, self.flag_image_height))
+        for i in range(1, 4):
+            filepath = "images/flag_{0:02}.png".format(i)
+            self.flag_images.append(pygame.image.load(filepath))
+        self.flag_image_width = self.cell_width
+        self.flag_image_height = self.cell_height
+
+        # Tile images
+        self.number_images = []
+        for i in range(0, 9):
+            filepath = "images/number_tile_{0:02}.png".format(i)
+            self.number_images.append(pygame.image.load(filepath))
+        self.unclicked_tile_image = pygame.image.load("images/blank_tile.png")
+        self.hover_tile_image = pygame.image.load(
+            "images/blank_tile_hover.png")
+
+        self.flag_image_width = self.cell_width
+        self.flag_image_height = self.cell_height
+        # for i in range(len(self.flag_images)):
+        # self.flag_images[i] = pygame.transform.scale(
+        #     self.flag_images[i],
+        #     (self.flag_image_width, self.flag_image_height))
 
         # Layout settings
         header_height = 50
-        grid_height = self.cell_height * self.num_rows + self.border_thick
-        grid_width = self.cell_width * self.num_cols + self.border_thick
+        grid_height = (self.cell_height +
+                       self.cell_buffer) * self.num_rows + self.cell_buffer
+        grid_width = (self.cell_width +
+                      self.cell_buffer) * self.num_cols + self.cell_buffer
         self.header_rect = pygame.Rect(0, 0, grid_width, header_height + 1)
         self.grid_rect = pygame.Rect(0, self.header_rect.bottom, grid_width,
                                      grid_height)
@@ -60,6 +76,7 @@ class Settings():
         self.header_fill_lose = self.colors["RED"]
 
         # Color settings
+        self.background_color = (251, 245, 243)
         self.cell_unclicked = (225, 225, 225)
         self.cell_clicked = (145, 145, 145)
         self.cell_game_won = (165, 215, 170)
