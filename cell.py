@@ -28,7 +28,6 @@ class Cell():
         self.rect = cell_rect
 
         # Image properties
-        self.clicked_tile_image = settings.number_images[0]
         self.unclicked_tile_image = settings.unclicked_tile_image
         self.tile_image_hover = settings.hover_tile_image
         self.tile_image_rect = self.unclicked_tile_image.get_rect()
@@ -41,14 +40,15 @@ class Cell():
         #                               settings.flag_image_height)
 
         # Initialize dynamic cell properties
-        self.init_dynamic_variables()
+        self.init_dynamic_variables(settings)
 
-    def init_dynamic_variables(self):
+    def init_dynamic_variables(self, settings: Settings):
         """Initializes the cells's dynamic variables"""
         self.clicked = False
         self.flag = 0
         self.mine = False
         self.adjacent_mines = -1
+        self.clicked_tile_image = settings.number_images[0]
 
     def draw(self, settings: Settings, hovered: bool):
         """Draws the cell on the screen"""

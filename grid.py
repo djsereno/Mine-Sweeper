@@ -47,7 +47,7 @@ class Grid():
         for row in range(self.num_rows):
             for col in range(self.num_cols):
                 cell: Cell = self.cells[row][col]
-                cell.init_dynamic_variables()
+                cell.init_dynamic_variables(settings)
 
         # Place new mines throughout the grid
         self.place_mines(settings)

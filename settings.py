@@ -17,8 +17,8 @@ class Settings():
         self.colors["WHITE"] = (255, 255, 255)
 
         # Grid settings
-        self.num_rows = 10
-        self.num_cols = 10
+        self.num_rows = 5
+        self.num_cols = 5
         self.border_thick = 1
         self.number_mines = int(self.num_rows * self.num_cols * 0.1)
 
