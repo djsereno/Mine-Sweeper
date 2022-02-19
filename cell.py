@@ -71,12 +71,16 @@ class Cell():
 
             # Reveal mines if game lost
             if settings.game_over == -1:
-                mine_fill = settings.mine_color
-                radius = int(self.width * 0.3)
-                pygame.draw.circle(self.screen, mine_fill, self.rect.center,
-                                   radius)
-                pygame.draw.circle(self.screen, (0, 0, 0), self.rect.center,
-                                   radius, 1)
+                if self.clicked:
+                    self.screen.blit(settings.mine_image_clicked, self.tile_image_rect)
+                else:
+                    self.screen.blit(settings.mine_image, self.tile_image_rect)
+                # mine_fill = settings.mine_color
+                # radius = int(self.width * 0.3)
+                # pygame.draw.circle(self.screen, mine_fill, self.rect.center,
+                #                    radius)
+                # pygame.draw.circle(self.screen, (0, 0, 0), self.rect.center,
+                #                    radius, 1)
 
             # Reveal green flags if game won
             elif settings.game_over == 1:

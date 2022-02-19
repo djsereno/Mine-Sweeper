@@ -18,6 +18,8 @@ class Timer():
 
     def __init__(self, screen: pygame.Surface, settings: Settings) -> None:
         """Initialize the timer"""
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
 
         # Timer properties
         self.init_dynamic_variables()

@@ -17,8 +17,8 @@ class Settings():
         self.colors["WHITE"] = (255, 255, 255)
 
         # Grid settings
-        self.num_rows = 5
-        self.num_cols = 5
+        self.num_rows = 3
+        self.num_cols = 10
         self.border_thick = 1
         self.number_mines = int(self.num_rows * self.num_cols * 0.1)
 
@@ -46,15 +46,19 @@ class Settings():
         self.hover_tile_image = pygame.image.load(
             "images/blank_tile_hover.png")
 
-        self.flag_image_width = self.cell_width
-        self.flag_image_height = self.cell_height
+        # Mine images
+        self.mine_image = pygame.image.load("images/bomb.png")
+        self.mine_image_clicked = pygame.image.load("images/bomb_clicked.png")
+
+        # self.flag_image_width = self.cell_width
+        # self.flag_image_height = self.cell_height
         # for i in range(len(self.flag_images)):
         # self.flag_images[i] = pygame.transform.scale(
         #     self.flag_images[i],
         #     (self.flag_image_width, self.flag_image_height))
 
         # Layout settings
-        header_height = 50
+        header_height = 70
         grid_height = (self.cell_height +
                        self.cell_buffer) * self.num_rows + self.cell_buffer
         grid_width = (self.cell_width +
@@ -63,15 +67,24 @@ class Settings():
         self.grid_rect = pygame.Rect(0, self.header_rect.bottom, grid_width,
                                      grid_height)
 
+        # Timer images
+        self.timer_images = []
+        for i in range(0, 12):
+            filepath = "images/timer_{0:02}.png".format(i)
+            self.timer_images.append(pygame.image.load(filepath))
+        self.timer_image_rect: pygame.Rect = self.timer_images[0].get_rect()
+        self.timer_image_rect.centery = self.header_rect.centery
+        self.timer_image_rect.left = self.header_rect.centerx + 10
+
         # Screen settings
         self.screen_width = grid_width
         self.screen_height = header_height + grid_height
 
         # UI settings
-        self.header_font_type = "Consolas"
-        self.header_font_size = 40
+        self.header_font_type = "Arial Rounded MT Bold"
+        self.header_font_size = 50
         self.header_font_color = self.colors["WHITE"]
-        self.header_fill = self.colors["BLUE"]
+        self.header_fill = (120, 120, 120)
         self.header_fill_win = self.colors["GREEN"]
         self.header_fill_lose = self.colors["RED"]
 

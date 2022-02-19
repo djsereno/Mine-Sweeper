@@ -46,7 +46,7 @@ def runPyGame():
     width, height = settings.screen_width, settings.screen_height
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Mine Sweeper")
-    icon = pygame.image.load("./images/bomb_color.png")
+    icon = settings.mine_image
     pygame.display.set_icon(icon)
 
     # Create game timer and mine counter

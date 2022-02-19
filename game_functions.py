@@ -77,9 +77,21 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
         header_fill = settings.header_fill
 
     pygame.draw.rect(screen, header_fill, settings.header_rect)
-    timer.text.text_image_rect.midright = settings.header_rect.midright
+
+    # Draw timer
+    index = timer.seconds % 12
+    screen.blit(settings.timer_images[index], settings.timer_image_rect)
+    timer.text.text_image_rect.midleft = settings.timer_image_rect.midright
+    timer.text.text_image_rect.x += 10
     timer.draw()
-    mine_counter.text_image_rect.midleft = settings.header_rect.midleft
+
+    # Draw mine counter
+    rect = pygame.Rect(0, 0, settings.flag_image_width,
+                       settings.flag_image_height)
+    rect.midright = settings.header_rect.center
+    rect.centerx -= 10
+    screen.blit(settings.flag_images[0], rect)
+    mine_counter.text_image_rect.midright = rect.midleft
     mine_counter.draw()
 
     # Draw grid
