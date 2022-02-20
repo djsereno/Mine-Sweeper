@@ -2,11 +2,9 @@
 import sys
 
 # Import non-standard modules
-import pygame
-import math
+import pygame, math
 
 # Import local classes and methods
-from cell import Cell
 from grid import Grid
 from timer import Timer
 from text_image import Text_Image
@@ -27,16 +25,16 @@ def checkEvents(grid: Grid, settings: Settings, timer: Timer):
         # Check if user clicks
         elif event.type == pygame.MOUSEBUTTONDOWN:
             left, middle, right = pygame.mouse.get_pressed()
-            pos = pygame.mouse.get_pos()
+            mouse_pos = pygame.mouse.get_pos()
 
             # Check if cursor is within the grid extents
-            if grid.rect.collidepoint(pos) and not settings.game_over:
+            if grid.rect.collidepoint(mouse_pos) and not settings.game_over:
 
                 # Start the game if currently inactive
                 if not settings.game_active:
                     settings.game_active = 1
 
-                (row, col) = grid.get_index(pos)
+                (row, col) = grid.get_index(mouse_pos)
                 if row != -1 and col != -1:
                     if left:
                         grid.click(settings, row, col, True)
@@ -45,10 +43,9 @@ def checkEvents(grid: Grid, settings: Settings, timer: Timer):
                     elif middle:
                         grid.flag(settings, row, col, 2)
 
-            # Prompt user for new game once the game is over
-            elif (settings.game_over 
-                and not settings.endgame_animating 
-                and settings.new_game_button_rect.collidepoint(pos)):
+            # Check if the user has clicked the 'New Game' button
+            elif (settings.game_over and not settings.endgame_animating
+                  and settings.new_game_button_rect.collidepoint(mouse_pos)):
                 reset_game(settings, grid, timer)
 
 
@@ -70,7 +67,7 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     """Draw things to the window. Called once per frame."""
     screen.fill(settings.background_color)
 
-    # Draw header and game over images
+    # Draw header
     if settings.game_over == 1:
         header_fill = settings.header_fill_win
     elif settings.game_over == -1:
@@ -79,9 +76,10 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
         header_fill = settings.header_fill
     pygame.draw.rect(screen, header_fill, settings.header_rect)
 
-    # Draw timer
+    # Draw timer image
     screen.blit(settings.timer_image, settings.timer_image_rect)
 
+    # Draw timer arm and rotate
     [x0, y0] = settings.timer_image_rect.center
     x0 -= 0.5
     y0 += 3
@@ -90,6 +88,7 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     y1 = y0 + arm_len * math.sin(timer.seconds / 30 * math.pi - math.pi / 2)
     pygame.draw.aaline(screen, (0, 0, 0), [x0, y0], [x1, y1])
 
+    # Draw timer text
     timer.text.text_image_rect.midleft = settings.timer_image_rect.midright
     timer.text.text_image_rect.x += 5
     timer.draw()
@@ -103,22 +102,23 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     mouse_pos = pygame.mouse.get_pos()
     grid.draw(settings, mouse_pos)
 
-    # Draw game over images
+    # Draw game over images once the game has ended
     if settings.game_over:
-        
-        # Dim the background content
+
+        # Begin by dimmming the background content
         dimmer = pygame.Surface(settings.grid_rect.size, pygame.SRCALPHA)
-        pygame.draw.rect(dimmer, (0, 0, 0, settings.dimmer_opacity), dimmer.get_rect())
+        pygame.draw.rect(dimmer, (0, 0, 0, settings.dimmer_opacity),
+                         dimmer.get_rect())
         screen.blit(dimmer, settings.grid_rect)
-        
-        # Gradually increase the dimming
+
+        # Gradually increase the dimming effect
         if settings.dimmer_opacity < settings.dimmer_max_opacity:
             settings.dimmer_opacity += 2
 
-        # Done with dimming. Show game over messages
+        # Once done dimming, fade in the game over images
         else:
-            
-            # Game over message
+
+            # Set the game over message based on win or lose
             if settings.game_over == 1:
                 gameover_image = settings.success_image
                 gameover_image_rect = settings.success_image_rect
@@ -126,19 +126,20 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
                 gameover_image = settings.failure_image
                 gameover_image_rect = settings.failure_image_rect
 
-            # New game button, check for mouse hover
-            if (settings.new_game_button_rect.collidepoint(mouse_pos) 
-                and not settings.endgame_animating):
+            # Set the 'New Game' button, checking for mouse hover
+            if (settings.new_game_button_rect.collidepoint(mouse_pos)
+                    and not settings.endgame_animating):
                 new_game_image = settings.new_game_hover_image
             else:
                 new_game_image = settings.new_game_image
 
+            # Set the image transparencies to fade in
             gameover_image.set_alpha(settings.image_opacity)
             new_game_image.set_alpha(settings.image_opacity)
             screen.blit(gameover_image, gameover_image_rect)
             screen.blit(new_game_image, settings.new_game_image_rect)
 
-            # Fade in game over images
+            # Gradually increase the fade in effect until fully opaque
             if settings.image_opacity < 255:
                 settings.image_opacity += 5
             else:

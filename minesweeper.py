@@ -6,21 +6,19 @@
 # Audio curtesy of https://freesound.org & https://mixkit.co
 #
 # Future updates or improvements:
+#   - Sound fx mute
+#   - UI to adjust game difficulty
 #   - Animations:
-#       - Highlighted cells
-#       - Emptry cell cascades
+#       - Empty cell cascades
 #       - Tripped mine cascades
 #       - Flags placed/removed
 
 # Import standard modules
-import sys
 
 # Import non-standard modules
 import pygame
-import random
 
 # Import local classes and methods
-from cell import Cell
 from grid import Grid
 from settings import Settings
 from timer import Timer
@@ -55,13 +53,12 @@ def runPyGame():
     # Initialize grid
     grid = Grid(screen, settings)
 
-    # Main game loop.
-    dt = 1 / fps  # dt is the time since last frame.
+    # Main game loop
+    dt = 1 / fps  # dt is the time since last frame
     while True:
         gf.checkEvents(grid, settings, timer)
         gf.update(dt, settings, timer, mine_counter)
         gf.draw(screen, settings, grid, timer, mine_counter)
-
         dt = fpsClock.tick(fps)
 
 

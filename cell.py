@@ -1,9 +1,7 @@
 # Import standard modules
-import sys
 
 # Import non-standard modules
 import pygame
-import random
 
 # Import local classes and methods
 from settings import Settings
@@ -28,16 +26,14 @@ class Cell():
         self.rect = cell_rect
 
         # Image properties
-        self.unclicked_tile_image = settings.unclicked_tile_image
-        self.tile_image_hover = settings.hover_tile_image
-        self.tile_image_rect = self.unclicked_tile_image.get_rect()
+        self.covered_tile_images = settings.covered_tile_images
+        self.flag_tile_images = settings.flag_tile_images
+        self.tile_image_rect = self.covered_tile_images[0].get_rect()
         self.tile_image_rect.center = self.rect.center
 
         self.flag_images = settings.flag_images
         self.flag_image_rect = settings.flag_images[0].get_rect()
         self.flag_image_rect.center = self.rect.center
-        # self.image_rect = pygame.Rect(0, 0, settings.flag_image_width,
-        #                               settings.flag_image_height)
 
         # Initialize dynamic cell properties
         self.init_dynamic_variables(settings)
@@ -53,15 +49,24 @@ class Cell():
     def draw(self, settings: Settings, hovered: bool):
         """Draws the cell on the screen"""
 
-        # Background color
+        # Tile image
         if self.clicked or settings.game_over:
             self.screen.blit(self.clicked_tile_image, self.tile_image_rect)
         else:
             if hovered:
-                self.screen.blit(self.tile_image_hover, self.tile_image_rect)
+                if self.flag:
+                    self.screen.blit(self.flag_tile_images[1],
+                                     self.tile_image_rect)
+                else:
+                    self.screen.blit(self.covered_tile_images[1],
+                                     self.tile_image_rect)
             else:
-                self.screen.blit(self.unclicked_tile_image,
-                                 self.tile_image_rect)
+                if self.flag:
+                    self.screen.blit(self.flag_tile_images[0],
+                                     self.tile_image_rect)
+                else:
+                    self.screen.blit(self.covered_tile_images[0],
+                                     self.tile_image_rect)
 
         # Reveal mines or green flags
         if self.mine and settings.game_over:
@@ -69,7 +74,8 @@ class Cell():
             # Reveal mines if game lost
             if settings.game_over == -1:
                 if self.clicked:
-                    self.screen.blit(settings.mine_image_clicked, self.tile_image_rect)
+                    self.screen.blit(settings.mine_image_clicked,
+                                     self.tile_image_rect)
                 else:
                     self.screen.blit(settings.mine_image, self.tile_image_rect)
 

@@ -1,20 +1,15 @@
 # Import standard modules
-from msilib.schema import Font
-import sys
 
 # Import non-standard modules
 import pygame
-import random
 
 # Import local classes and methods
-from cell import Cell
-from grid import Grid
-from settings import Settings
 
 
 class Text_Image():
 
-    def __init__(self, message: str, screen: pygame.Surface, font: pygame.font.Font, color: pygame.Color):
+    def __init__(self, message: str, screen: pygame.Surface,
+                 font: pygame.font.Font, color: pygame.Color):
         """Initialize text attributes"""
         self.screen = screen
         self.screen_rect = screen.get_rect()
@@ -30,5 +25,5 @@ class Text_Image():
         self.text_image_rect = self.text_image.get_rect()
 
     def draw(self):
-        # Draw blank button and then draw the message
+        """Draw the text image to the screen"""
         self.screen.blit(self.text_image, self.text_image_rect)

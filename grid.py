@@ -2,8 +2,7 @@
 import sys
 
 # Import non-standard modules
-import pygame
-import random
+import pygame, random
 
 # Import local classes and methods
 from cell import Cell
@@ -41,6 +40,52 @@ class Grid():
         # Randomly place the mines within the grid
         self.place_mines(settings)
 
+    def place_mines(self, settings: Settings):
+        """Randomly scatters mines throughout the grid"""
+
+        # Place mines throughout the grid
+        for i in range(settings.number_mines):
+            while True:
+                row = random.randint(0, self.num_rows - 1)
+                col = random.randint(0, self.num_cols - 1)
+                cell: Cell = self.cells[row][col]
+                if not cell.mine:
+                    cell.mine = True
+                    break
+
+        # Update the cell adjacent mine counts
+        self.update_mine_counts(settings)
+
+    def update_mine_counts(self, settings: Settings):
+        """Counts the adjacent mines for each cell and updates the adjacent_mines property"""
+
+        # Check each cell within the grid
+        for row in range(self.num_rows):
+            for col in range(self.num_cols):
+
+                cell: Cell = self.cells[row][col]
+
+                # Only update for cells that don't contain mines
+                if not cell.mine:
+                    num_mines = 0
+
+                    # Check cells in the surrounding 3x3 grid
+                    for row_off in range(-1, 2):
+                        for col_off in range(-1, 2):
+                            new_row = cell.row + row_off
+                            new_col = cell.col + col_off
+
+                            # Only check cells within the grid
+                            if (new_row >= 0 and new_row < self.num_rows
+                                    and new_col >= 0
+                                    and new_col < self.num_cols
+                                    and self.cells[new_row][new_col].mine):
+
+                                num_mines += 1
+
+                    cell.adjacent_mines = num_mines
+                    cell.clicked_tile_image = settings.number_images[num_mines]
+
     def reset(self, settings):
         """Reset the grid for a new game"""
 
@@ -55,8 +100,13 @@ class Grid():
 
     def click(self, settings: Settings, row: int, col: int, play_audio: bool):
         """Sets cell clicked status to True if False and handles cascades as occurs"""
+
+        # Cascade variable used to check if a cascade has been triggered
+        # (i.e. a cell with no adjacent mines has been clicked). A different
+        # sound effects are used for cascades
         cascade = False
         cell: Cell = self.cells[row][col]
+
         if not cell.clicked:
             cell.clicked = True
 
@@ -94,13 +144,14 @@ class Grid():
             self.check_game_over(settings)
 
     def flag(self, settings: Settings, row: int, col: int, flag: int):
-        """Flags the current cell"""
+        """Flags the current cell as either a mine or unknown"""
+
         cell = self.cells[row][col]
 
-        # Alternate the flag of the cell (nothing, unknown, or mine)
+        # Change the flag of the cell
         if not cell.clicked:
 
-            # Update the flag counter
+            # Right clicked (mine flag)
             if flag == 1:
                 if cell.flag == 1:
                     cell.flag = 0
@@ -108,7 +159,8 @@ class Grid():
                 else:
                     cell.flag = 1
                     settings.mines_flagged += 1
-            
+
+            # Middle clicked (question flag)
             elif flag == 2:
                 if cell.flag == 2:
                     cell.flag = 0
@@ -117,52 +169,11 @@ class Grid():
                         settings.mines_flagged -= 1
                     cell.flag = 2
 
+            # Play sound effects if a flag is being added or removed
             if cell.flag == 0:
                 pygame.mixer.Sound.play(settings.sound_flag_low)
             else:
                 pygame.mixer.Sound.play(settings.sound_flag_high)
-
-    def place_mines(self, settings: Settings):
-        """Randomly scatters mines throughout the grid"""
-
-        # Place mines throughout the grid
-        for i in range(settings.number_mines):
-            while True:
-                row = random.randint(0, self.num_rows - 1)
-                col = random.randint(0, self.num_cols - 1)
-                cell = self.cells[row][col]
-                if not cell.mine:
-                    cell.mine = True
-                    break
-
-        # Update the cell adjacent mine counts
-        self.update_mine_counts(settings)
-
-    def update_mine_counts(self, settings: Settings):
-        """Counts the adjacent mines for each cell and updates the adjacent_mines property"""
-
-        for row in range(self.num_rows):
-            for col in range(self.num_cols):
-
-                cell: Cell = self.cells[row][col]
-
-                # Only update for cells that don't contain mines
-                if not cell.mine:
-                    num_mines = 0
-
-                    # Check cells in the surrounding 3x3 grid
-                    for row_off in range(-1, 2):
-                        for col_off in range(-1, 2):
-                            new_row = cell.row + row_off
-                            new_col = cell.col + col_off
-
-                            # Only check cells within the grid
-                            if new_row >= 0 and new_row < self.num_rows and new_col >= 0 and new_col < self.num_cols:
-                                if self.cells[new_row][new_col].mine:
-                                    num_mines += 1
-
-                    cell.adjacent_mines = num_mines
-                    cell.clicked_tile_image = settings.number_images[num_mines]
 
     def check_game_over(self, settings: Settings):
         """Returns True and updates the grid state if the game is over, False otherwise"""
@@ -186,16 +197,17 @@ class Grid():
 
     def draw(self, settings: Settings, mouse_pos: tuple):
         """Draws the grid on screen"""
+
+        # Get the cell index at the cursor to trigeger sound effects and highlighting
         i, j = None, None
         if self.rect.collidepoint(mouse_pos):
             [i, j] = self.get_index(mouse_pos)
 
             # Play sound when hovering over a new cell
-            if ([i, j] != self.prev_index 
-                and [i, j] != [-1, -1]
-                and not settings.game_over 
-                and not self.cells[i][j].clicked):
-                
+            if ([i, j] != self.prev_index and [i, j] != [-1, -1]
+                    and not settings.game_over
+                    and not self.cells[i][j].clicked):
+
                 pygame.mixer.Sound.play(settings.sound_hover)
 
             self.prev_index = [i, j]
@@ -210,6 +222,8 @@ class Grid():
 
     def get_index(self, mouse_pos: tuple):
         """Returns the (col, row) for a given (x, y)"""
+
+        # Loop through each cell and check for rect collisions
         for row in range(self.num_rows):
             for col in range(self.num_cols):
                 if self.cells[row][col].rect.collidepoint(mouse_pos):
