@@ -1,11 +1,14 @@
 # Import standard modules
 from cgitb import reset
+from cmath import cos, pi, sin
 import sys
 from typing import Text
+from xml.etree.ElementTree import PI
 
 # Import non-standard modules
 import pygame
 import random
+import math
 
 # Import local classes and methods
 from cell import Cell
@@ -41,7 +44,7 @@ def checkEvents(grid: Grid, settings: Settings, timer: Timer):
                 (row, col) = grid.get_index(pos)
                 if row != -1 and col != -1:
                     if left:
-                        grid.click(settings, row, col)
+                        grid.click(settings, row, col, True)
                     elif right:
                         grid.flag(settings, row, col)
 
@@ -79,19 +82,24 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     pygame.draw.rect(screen, header_fill, settings.header_rect)
 
     # Draw timer
-    index = timer.seconds % 12
-    screen.blit(settings.timer_images[index], settings.timer_image_rect)
+    screen.blit(settings.timer_image, settings.timer_image_rect)
+
+    [x0, y0] = settings.timer_image_rect.center
+    x0 -= 0.5
+    y0 += 3
+    arm_len = 11
+    x1 = x0 + arm_len * math.cos(timer.seconds / 30 * math.pi - math.pi / 2)
+    y1 = y0 + arm_len * math.sin(timer.seconds / 30 * math.pi - math.pi / 2)
+    pygame.draw.aaline(screen, (0, 0, 0), [x0, y0], [x1, y1])
+
     timer.text.text_image_rect.midleft = settings.timer_image_rect.midright
-    timer.text.text_image_rect.x += 10
+    timer.text.text_image_rect.x += 5
     timer.draw()
 
     # Draw mine counter
-    rect = pygame.Rect(0, 0, settings.flag_image_width,
-                       settings.flag_image_height)
-    rect.midright = settings.header_rect.center
-    rect.centerx -= 10
-    screen.blit(settings.flag_images[0], rect)
-    mine_counter.text_image_rect.midright = rect.midleft
+    screen.blit(settings.flag_counter_image, settings.flag_counter_rect)
+    mine_counter.text_image_rect.midleft = settings.flag_counter_rect.midright
+    # mine_counter.text_image_rect.x += 10
     mine_counter.draw()
 
     # Draw grid

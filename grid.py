@@ -52,11 +52,12 @@ class Grid():
         # Place new mines throughout the grid
         self.place_mines(settings)
 
-    def click(self, settings: Settings, row: int, col: int):
+    def click(self, settings: Settings, row: int, col: int, play_audio: bool):
         """Sets cell clicked status to True if False and handles cascades as occurs"""
+        cascade = False
         cell: Cell = self.cells[row][col]
         if not cell.clicked:
-            cell.clicked = True
+            cell.clicked = True            
 
             # Update the mine counter if clicking a flagged cell
             if cell.flag == 1:
@@ -66,6 +67,7 @@ class Grid():
             if cell.mine:
                 settings.game_over = -1
                 settings.game_active = 0
+                pygame.mixer.Sound.play(settings.sound_lose)
 
             # Click surrounding cells if adjacent mines is 0
             elif cell.adjacent_mines == 0:
@@ -78,8 +80,16 @@ class Grid():
 
                         # Only check cells within the grid
                         if next_row >= 0 and next_row < self.num_rows and next_col >= 0 and next_col < self.num_cols:
-                            self.click(settings, next_row, next_col)
-
+                            cascade = True
+                            self.click(settings, next_row, next_col, False)
+            
+            # Play audio
+            if play_audio:
+                if cascade:
+                    pygame.mixer.Sound.play(settings.sound_cascade)
+                else:
+                    pygame.mixer.Sound.play(settings.sound_click)
+            
             # Check if the game has ended
             self.check_game_over(settings)
 
@@ -96,6 +106,11 @@ class Grid():
                 settings.mines_flagged += 1
             elif cell.flag == 2:
                 settings.mines_flagged -= 1
+
+            if cell.flag == 0:
+                pygame.mixer.Sound.play(settings.sound_flag_low)                
+            else:
+                pygame.mixer.Sound.play(settings.sound_flag_high)
 
     def place_mines(self, settings: Settings):
         """Randomly scatters mines throughout the grid"""
@@ -157,6 +172,7 @@ class Grid():
             settings.mines_flagged = settings.number_mines
             settings.game_over = 1
             settings.game_active = 0
+            pygame.mixer.Sound.play(settings.sound_win)
             return True
 
     def draw(self, settings: Settings, mouse_pos: tuple):

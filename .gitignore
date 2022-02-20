@@ -154,3 +154,4 @@ cython_debug/
 # Other
 test.py
 ref_images/
+ref_sounds/

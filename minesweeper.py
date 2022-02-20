@@ -2,6 +2,8 @@
 # MINE SWEEPER
 # ==============
 # Author: Derek Sereno
+# Images courtesy of 
+# Audio curtesy of https://freesound.org & https://mixkit.co
 #
 # Future updates or improvements:
 #   - Animations:
@@ -46,7 +48,7 @@ def runPyGame():
     width, height = settings.screen_width, settings.screen_height
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Mine Sweeper")
-    icon = settings.mine_image
+    icon = settings.mine_icon
     pygame.display.set_icon(icon)
 
     # Create game timer and mine counter
