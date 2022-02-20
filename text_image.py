@@ -1,4 +1,5 @@
 # Import standard modules
+from msilib.schema import Font
 import sys
 
 # Import non-standard modules
@@ -13,15 +14,14 @@ from settings import Settings
 
 class Text_Image():
 
-    def __init__(self, message: str, screen: pygame.Surface, font_type: str,
-                 font_size: int, color: pygame.Color):
+    def __init__(self, message: str, screen: pygame.Surface, font: pygame.font.Font, color: pygame.Color):
         """Initialize text attributes"""
         self.screen = screen
         self.screen_rect = screen.get_rect()
 
         # Text properties
         self.text_color = color
-        self.font = pygame.font.SysFont(font_type, font_size)
+        self.font = font
         self.prep_text(message)
 
     def prep_text(self, message: str):

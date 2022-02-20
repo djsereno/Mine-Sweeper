@@ -22,6 +22,7 @@ class Grid():
         self.num_cols = settings.num_cols
         self.rect = settings.grid_rect
         self.cells = []
+        self.prev_index = [-1, -1]
 
         # Create the cells within the grid
         for row in range(self.num_rows):
@@ -57,7 +58,7 @@ class Grid():
         cascade = False
         cell: Cell = self.cells[row][col]
         if not cell.clicked:
-            cell.clicked = True            
+            cell.clicked = True
 
             # Update the mine counter if clicking a flagged cell
             if cell.flag == 1:
@@ -65,8 +66,7 @@ class Grid():
 
             # End the game if clicking a mine
             if cell.mine:
-                settings.game_over = -1
-                settings.game_active = 0
+                settings.initiate_endgame(False)
                 pygame.mixer.Sound.play(settings.sound_lose)
 
             # Click surrounding cells if adjacent mines is 0
@@ -82,33 +82,43 @@ class Grid():
                         if next_row >= 0 and next_row < self.num_rows and next_col >= 0 and next_col < self.num_cols:
                             cascade = True
                             self.click(settings, next_row, next_col, False)
-            
+
             # Play audio
             if play_audio:
                 if cascade:
                     pygame.mixer.Sound.play(settings.sound_cascade)
                 else:
                     pygame.mixer.Sound.play(settings.sound_click)
-            
+
             # Check if the game has ended
             self.check_game_over(settings)
 
-    def flag(self, settings: Settings, row: int, col: int):
+    def flag(self, settings: Settings, row: int, col: int, flag: int):
         """Flags the current cell"""
         cell = self.cells[row][col]
 
         # Alternate the flag of the cell (nothing, unknown, or mine)
         if not cell.clicked:
-            cell.flag = (cell.flag + 1) % 3
 
             # Update the flag counter
-            if cell.flag == 1:
-                settings.mines_flagged += 1
-            elif cell.flag == 2:
-                settings.mines_flagged -= 1
+            if flag == 1:
+                if cell.flag == 1:
+                    cell.flag = 0
+                    settings.mines_flagged -= 1
+                else:
+                    cell.flag = 1
+                    settings.mines_flagged += 1
+            
+            elif flag == 2:
+                if cell.flag == 2:
+                    cell.flag = 0
+                else:
+                    if cell.flag == 1:
+                        settings.mines_flagged -= 1
+                    cell.flag = 2
 
             if cell.flag == 0:
-                pygame.mixer.Sound.play(settings.sound_flag_low)                
+                pygame.mixer.Sound.play(settings.sound_flag_low)
             else:
                 pygame.mixer.Sound.play(settings.sound_flag_high)
 
@@ -170,8 +180,7 @@ class Grid():
 
             # All mines are unclicked and all non-mines are clicked, game won
             settings.mines_flagged = settings.number_mines
-            settings.game_over = 1
-            settings.game_active = 0
+            settings.initiate_endgame(True)
             pygame.mixer.Sound.play(settings.sound_win)
             return True
 
@@ -181,6 +190,16 @@ class Grid():
         if self.rect.collidepoint(mouse_pos):
             [i, j] = self.get_index(mouse_pos)
 
+            # Play sound when hovering over a new cell
+            if ([i, j] != self.prev_index 
+                and [i, j] != [-1, -1]
+                and not settings.game_over 
+                and not self.cells[i][j].clicked):
+                
+                pygame.mixer.Sound.play(settings.sound_hover)
+
+            self.prev_index = [i, j]
+
         # Draw cells
         for row in range(self.num_rows):
             for col in range(self.num_cols):
@@ -189,30 +208,8 @@ class Grid():
                 else:
                     self.cells[row][col].draw(settings, False)
 
-        # # Draw horizontal borders
-        # for row in range(self.num_rows + 1):
-        #     pygame.draw.line(
-        #         self.screen, settings.border_color,
-        #         (self.rect.left, self.rect.top + row * settings.cell_height),
-        #         (self.rect.right, self.rect.top + row * settings.cell_height),
-        #         settings.border_thick)
-
-        # # Draw vertical borders
-        # for col in range(self.num_cols + 1):
-        #     pygame.draw.line(self.screen, settings.border_color,
-        #                      (col * settings.cell_width, self.rect.top),
-        #                      (col * settings.cell_width, self.rect.bottom),
-        #                      settings.border_thick)
-
     def get_index(self, mouse_pos: tuple):
         """Returns the (col, row) for a given (x, y)"""
-        # (x, y) = mouse_pos
-        # width, height = self.rect.width, self.rect.height
-        # num_rows, num_cols = self.num_rows, self.num_cols
-        # row = int((y - self.rect.top) / height * num_rows)
-        # col = int(x / width * num_cols)
-        # return (row, col)
-
         for row in range(self.num_rows):
             for col in range(self.num_cols):
                 if self.cells[row][col].rect.collidepoint(mouse_pos):

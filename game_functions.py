@@ -1,13 +1,8 @@
 # Import standard modules
-from cgitb import reset
-from cmath import cos, pi, sin
 import sys
-from typing import Text
-from xml.etree.ElementTree import PI
 
 # Import non-standard modules
 import pygame
-import random
 import math
 
 # Import local classes and methods
@@ -46,10 +41,14 @@ def checkEvents(grid: Grid, settings: Settings, timer: Timer):
                     if left:
                         grid.click(settings, row, col, True)
                     elif right:
-                        grid.flag(settings, row, col)
+                        grid.flag(settings, row, col, 1)
+                    elif middle:
+                        grid.flag(settings, row, col, 2)
 
-            # Restart the game if the user clicks the header once the game is over
-            elif settings.game_over and settings.header_rect.collidepoint(pos):
+            # Prompt user for new game once the game is over
+            elif (settings.game_over 
+                and not settings.endgame_animating 
+                and settings.new_game_button_rect.collidepoint(pos)):
                 reset_game(settings, grid, timer)
 
 
@@ -71,14 +70,13 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     """Draw things to the window. Called once per frame."""
     screen.fill(settings.background_color)
 
-    # Draw header
+    # Draw header and game over images
     if settings.game_over == 1:
         header_fill = settings.header_fill_win
     elif settings.game_over == -1:
         header_fill = settings.header_fill_lose
     else:
         header_fill = settings.header_fill
-
     pygame.draw.rect(screen, header_fill, settings.header_rect)
 
     # Draw timer
@@ -99,12 +97,52 @@ def draw(screen: pygame.Surface, settings: Settings, grid: Grid, timer: Timer,
     # Draw mine counter
     screen.blit(settings.flag_counter_image, settings.flag_counter_rect)
     mine_counter.text_image_rect.midleft = settings.flag_counter_rect.midright
-    # mine_counter.text_image_rect.x += 10
     mine_counter.draw()
 
     # Draw grid
     mouse_pos = pygame.mouse.get_pos()
     grid.draw(settings, mouse_pos)
+
+    # Draw game over images
+    if settings.game_over:
+        
+        # Dim the background content
+        dimmer = pygame.Surface(settings.grid_rect.size, pygame.SRCALPHA)
+        pygame.draw.rect(dimmer, (0, 0, 0, settings.dimmer_opacity), dimmer.get_rect())
+        screen.blit(dimmer, settings.grid_rect)
+        
+        # Gradually increase the dimming
+        if settings.dimmer_opacity < settings.dimmer_max_opacity:
+            settings.dimmer_opacity += 2
+
+        # Done with dimming. Show game over messages
+        else:
+            
+            # Game over message
+            if settings.game_over == 1:
+                gameover_image = settings.success_image
+                gameover_image_rect = settings.success_image_rect
+            elif settings.game_over == -1:
+                gameover_image = settings.failure_image
+                gameover_image_rect = settings.failure_image_rect
+
+            # New game button, check for mouse hover
+            if (settings.new_game_button_rect.collidepoint(mouse_pos) 
+                and not settings.endgame_animating):
+                new_game_image = settings.new_game_hover_image
+            else:
+                new_game_image = settings.new_game_image
+
+            gameover_image.set_alpha(settings.image_opacity)
+            new_game_image.set_alpha(settings.image_opacity)
+            screen.blit(gameover_image, gameover_image_rect)
+            screen.blit(new_game_image, settings.new_game_image_rect)
+
+            # Fade in game over images
+            if settings.image_opacity < 255:
+                settings.image_opacity += 5
+            else:
+                settings.endgame_animating = False
 
     pygame.display.flip()
 

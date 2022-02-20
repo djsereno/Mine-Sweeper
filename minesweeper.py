@@ -2,7 +2,7 @@
 # MINE SWEEPER
 # ==============
 # Author: Derek Sereno
-# Images courtesy of 
+# Images courtesy of https://www.vecteezy.com
 # Audio curtesy of https://freesound.org & https://mixkit.co
 #
 # Future updates or improvements:
@@ -11,11 +11,6 @@
 #       - Emptry cell cascades
 #       - Tripped mine cascades
 #       - Flags placed/removed
-#   - Audio
-#   - Artwork for:
-#       - Win: Untripped mines
-#       - Lose: Unflagged mines, flagged mines, questioned mine, tripped mine
-#       - In Progress: Flag, question
 
 # Import standard modules
 import sys
@@ -54,8 +49,7 @@ def runPyGame():
     # Create game timer and mine counter
     timer = Timer(screen, settings)
     mine_counter = Text_Image("{0:02}/{1:02}".format(0, settings.number_mines),
-                              screen, settings.header_font_type,
-                              settings.header_font_size,
+                              screen, settings.header_font,
                               settings.header_font_color)
 
     # Initialize grid

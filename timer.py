@@ -25,8 +25,7 @@ class Timer():
         self.init_dynamic_variables()
 
         # Timer text image
-        self.text = Text_Image(self.message, screen, settings.header_font_type,
-                               settings.header_font_size,
+        self.text = Text_Image(self.message, screen, settings.header_font,
                                settings.header_font_color)
 
     def increment(self, dt):
