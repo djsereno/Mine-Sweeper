@@ -154,6 +154,6 @@ Project Link: [https://github.com/djsereno/Mine-Sweeper](https://github.com/djse
 ## Acknowledgments
 
 - Images courtesy of [vecteezy.com](https://www.vecteezy.com)
-- Audio curtesy of [freesound.org](https://freesound.org) & [mixkit.co](https://mixkit.co)
+- Audio courtesy of [freesound.org](https://freesound.org) & [mixkit.co](https://mixkit.co)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
